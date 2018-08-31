@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%; width: 99.66%">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Percy Nevers</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="build/mediaelement-and-player.min.js"></script>
+    <link rel="stylesheet" href="build/mediaelementplayer.min.css"></link>
+
+    <style>
+        body {font-family: Arial;}
+        
+        /* Style the tab */
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        
+        /* Style the buttons inside the tab */
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+        
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        
+        /* Create an active/current tablink class */
+        .tab button.active {
+            background-color: #ccc;
+        }
+        
+        /* Style the tab content */
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+            height: 90%
+        }
+
+        .modal-dialog,
+        .modal-content {
+            /* 80% of window height */
+            height: 80%;
+        }
+
+        .modal-body {
+            /* 100% = dialog height, 120px = header + footer */
+            max-height: calc(100% - 120px);
+            overflow-y: scroll;
+        }
+    </style>
+
+    <script>
+        /*-----------------------------------------------------------------------------------------
+            This section is my "brute force" solution to my jQuery not working as expected when
+            working along with express. I will trouble shoot that later.
+        -----------------------------------------------------------------------------------------*/
+
+        function showAbout(){
+            var disp = document.getElementById('disp');
+            disp.innerHTML = `
+                <br>
+                <h5>
+                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+                    accusantium doloremque laudantium, totam rem aperiam, eaque ipsa 
+                    quae ab illo inventore veritatis et quasi architecto beatae vitae 
+                    dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit 
+                    aspernatur aut odit aut fugit, sed quia consequuntur magni dolores 
+                    eos qui ratione voluptatem sequi nesciunt.
+                </h5>
+
+                <h5>
+                    Neque porro quisquam est, 
+                    qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
+                    sed quia non numquam eius modi tempora incidunt ut labore et dolore 
+                    magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum 
+                    exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea 
+                    commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate 
+                    velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat 
+                    quo voluptas nulla pariatur? 
+                </h5>
+                `;
+            return false;
+        }
+        function showProjects(){
+                var disp = document.getElementById('disp');
+                disp.innerHTML = `
+                <br>
+                <div class="row">
+                    <div class="col">
+                        <div class="bg-warning" style="height:175px; width:175px">
+                        <img src= "graphics/xmas_cvr.jpg" alt="woops" style="height:100%; width: 100%">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h4> A Percy Nevers Christmas </h4>
+                    </div>
+                </div>
+                <br>
+
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas1">play</button> 1 - The First Noel </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#noel" onclick="openTab(event, 'noel_lyrics')"> Track FAQ </a>
+                </div>
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas2">play</button> 2 - O Little Town Of Bethlehem </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#bethlehem" onclick="openTab(event, 'bethlehem_lyrics')"> Track FAQ </a>
+                </div>
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas3">play</button> 3 - Frosty The Dragon </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#frosty" onclick="openTab(event, 'frosty_lyrics')"> Track FAQ </a>
+                </div>
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas4">play</button> 4 - O Tannenbaum </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#tannenbaum" onclick="openTab(event, 'tannenbaum_lyrics')"> Track FAQ </a>
+                </div>
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas5">play</button> 5 - O Come O Come Emmanuel </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#emmanuel" onclick="openTab(event, 'emmanuel_lyrics')"> Track FAQ </a>
+                </div>
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas6">play</button> 6 - God Rest Ye Merry Gentlemen </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#gentlemen" onclick="openTab(event, 'gentlemen_lyrics')"> Track FAQ </a>
+                </div>
+                <hr>
+                <br>
+
+                
+                `;
+                return false;
+            }
+
+        function setSong(file){
+            alert(`setting song to ${file}`);
+            document.getElementById("foot").innerHTML = `
+                <audio controls="controls" autoplay src="xmas/${file}.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                </audio>
+            `
+        }
+
+
+        /*---------------------------------------------------------------------------------------------------
+                                                    Jquery
+        ---------------------------------------------------------------------------------------------------*/
+        $(document).ready(function(){
+
+            $('audio, video').mediaelementplayer();
+
+            var disp = document.getElementById('disp')
+
+            /*---------------------------------------------------------------------------------------------------
+                                                    About Page
+            ---------------------------------------------------------------------------------------------------*/
+            $('#about').click(function(event){
+                event.preventDefault();
+                disp.innerHTML = `
+                <br>
+                <h5>
+                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+                    accusantium doloremque laudantium, totam rem aperiam, eaque ipsa 
+                    quae ab illo inventore veritatis et quasi architecto beatae vitae 
+                    dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit 
+                    aspernatur aut odit aut fugit, sed quia consequuntur magni dolores 
+                    eos qui ratione voluptatem sequi nesciunt.
+                </h5>
+
+                <h5>
+                    Neque porro quisquam est, 
+                    qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
+                    sed quia non numquam eius modi tempora incidunt ut labore et dolore 
+                    magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum 
+                    exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea 
+                    commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate 
+                    velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat 
+                    quo voluptas nulla pariatur? 
+                </h5>
+                `;
+                return false;
+            })
+
+            
+            /*---------------------------------------------------------------------------------------------------
+                                                    Projects Page
+            ---------------------------------------------------------------------------------------------------*/
+            
+            
+            $('#projects').click(function(event){
+                event.preventDefault();
+                disp.innerHTML = `
+                <br>
+                <div class="row">
+                    <div class="col">
+                        <div class="bg-warning" style="height:175px; width:175px">
+                        <img src= "graphics/xmas_cvr.jpg" alt="woops" style="height:100%; width: 100%">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h4> A Percy Nevers Christmas </h4>
+                    </div>
+                </div>
+                <br>
+
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas1" >play</button> 1 - The First Noel </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#noel" onclick="openTab(event, 'noel_lyrics')"> Track FAQ </a>
+                </div>
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas2" >play</button> 2 - O Little Town Of Bethlehem </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#bethlehem" onclick="openTab(event, 'bethlehem_lyrics')"> Track FAQ </a>
+                </div>
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas3" >play</button> 3 - Frosty The Dragon </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#frosty" onclick="openTab(event, 'frosty_lyrics')"> Track FAQ </a>
+                </div>
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas4" >play</button> 4 - O Tannenbaum </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#tannenbaum" onclick="openTab(event, 'tannenbaum_lyrics')"> Track FAQ </a>
+                </div>
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas5" >play</button> 5 - O Come O Come Emmanuel </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#emmanuel" onclick="openTab(event, 'emmanuel_lyrics')"> Track FAQ </a>
+                </div>
+                <div>
+                    <h6 class="d-inline-block"> <button id="xmas6" >play</button> 6 - God Rest Ye Merry Gentlemen </h6>
+                    <a class="text-muted" href="#" data-toggle="modal" data-target="#gentlemen" onclick="openTab(event, 'gentlemen_lyrics')"> Track FAQ </a>
+                </div>
+                <hr>
+                <br>
+
+                
+                `;
+                return false;
+            })
+
+            /*---------------------------------------------------------------------------------------------------
+                                                    Events Page
+            ---------------------------------------------------------------------------------------------------*/
+
+            $('#events').click(function(event){
+                event.preventDefault();
+                disp.innerHTML = `
+                <br>
+                <h5> 1/1/18 - Percy Does Something</h5>
+                <h5> 1/1/18 - Percy Does Something</h5>
+                <h5> 1/1/18 - Percy Does Something</h5>
+                <h5> 1/1/18 - Percy Does Something</h5>
+                <h5> 1/1/18 - Percy Does Something</h5>
+                <h5> 1/1/18 - Percy Does Something</h5>
+                <h5> 1/1/18 - Percy Does Something</h5>
+                <h5> 1/1/18 - Percy Does Something</h5>
+                `
+            })
+
+            /*---------------------------------------------------------------------------------------------------
+                         -Jquery for setting all the different songs to the audio player
+            ---------------------------------------------------------------------------------------------------*/
+            $('#disp').on('click', '#xmas1', function(event){
+                document.getElementById("foot").innerHTML = `
+                    <audio controls="controls" autoplay src="xmas/S1.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                    </audio>
+                `
+                $('audio, video').mediaelementplayer();
+            })
+            $('#disp').on('click', '#xmas2', function(event){
+                document.getElementById("foot").innerHTML = `
+                    <audio controls="controls" autoplay src="xmas/S2.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                    </audio>
+                `
+                $('audio, video').mediaelementplayer();
+            })
+            $('#disp').on('click', '#xmas3', function(event){
+                document.getElementById("foot").innerHTML = `
+                    <audio controls="controls" autoplay src="xmas/S3.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                    </audio>
+                `
+                $('audio, video').mediaelementplayer();
+            })
+            $('#disp').on('click', '#xmas4', function(event){
+                document.getElementById("foot").innerHTML = `
+                    <audio controls="controls" autoplay src="xmas/S4.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                    </audio>
+                `
+                $('audio, video').mediaelementplayer();
+            })
+            $('#disp').on('click', '#xmas5', function(event){
+                document.getElementById("foot").innerHTML = `
+                    <audio controls="controls" autoplay src="xmas/5.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                    </audio>
+                `
+                $('audio, video').mediaelementplayer();
+            })
+            $('#disp').on('click', '#xmas6', function(event){
+                document.getElementById("foot").innerHTML = `
+                    <audio controls="controls" autoplay src="xmas/S6.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                    </audio>
+                `
+                $('audio, video').mediaelementplayer();
+            })
+            $('#disp').on('click', '#covers1', function(event){
+                document.getElementById("foot").innerHTML = `
+                    <audio controls="controls" autoplay src="covers/C1.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                    </audio>
+                `
+                $('audio, video').mediaelementplayer();
+            })
+            $('#disp').on('click', '#covers2', function(event){
+                document.getElementById("foot").innerHTML = `
+                    <audio controls="controls" autoplay src="covers/C2.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                    </audio>
+                `
+                $('audio, video').mediaelementplayer();
+            })
+            $('#disp').on('click', '#covers3', function(event){
+                document.getElementById("foot").innerHTML = `
+                    <audio controls="controls" autoplay src="covers/C3.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                    </audio>
+                `
+                $('audio, video').mediaelementplayer();
+            })
+            $('#disp').on('click', '#covers4', function(event){
+                document.getElementById("foot").innerHTML = `
+                    <audio controls="controls" autoplay src="covers/C4.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                    </audio>
+                `
+                $('audio, video').mediaelementplayer();
+            })
+            $('#disp').on('click', '#covers5', function(event){
+                document.getElementById("foot").innerHTML = `
+                    <audio controls="controls" autoplay src="covers/C5.mp3" type="audio/mp3" style="width:100%; border-radius:0px">
+                    </audio>
+                `
+                $('audio, video').mediaelementplayer();
+            })
+
+        })
+            // var disp = document.getElementById("disp")
+            // function setAbout(){
+            //     alert("About Clicked");
+    
+            // }
+            // function setProjects(){
+            //     alert("Projects Clicked");
+            //     disp.innerHTML = "<h5> Projects </h5>"
+            // }
+            // function setEvents(){
+            //     alert("Events Clicked");
+    
+            // }
+    </script>
+</head>
+<!-- For the record, this is what comments look like in html -->
+
+
+<body style="height: 94%; width: 99.6%"> 
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                Main Page
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+
+    <div class="bg-primary" style="height: 100%; width: 99.66%">
+        <div class="row h-100">
+            <!--'main' body -->
+            <div class="col-8 bg-danger">
+                <img src="graphics/mission2.jpg" alt="cool stuff should be here" style="width:105%; max-height: 100%">
+            </div>
+            <!-- Side info bar -->
+            <div class="col bg-dark text-white">
+                <!-- Different info page 'links' -->
+                <div class="container bg-primary text-center" style="height:10%">
+                    <br>
+                    <div class="row">
+                        <div class="col">
+                            <h2><a href="" id="about" onclick="showAbout(); return false" class="text-white"> About </a></h2>
+                        </div>
+                        <div class="col">
+                            <h2><a href="" id="projects" onclick="showProjects(); return false"  class="text-white"> Projects </a></h2>
+                        </div>
+                    </div>
+                </div>
+                <!-- Info page body -->
+                <div id="disp" class="container bg-success" style="height:90%; overflow:auto">
+                    <br>
+                    <h5>
+                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+                        accusantium doloremque laudantium, totam rem aperiam, eaque ipsa 
+                        quae ab illo inventore veritatis et quasi architecto beatae vitae 
+                        dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit 
+                        aspernatur aut odit aut fugit, sed quia consequuntur magni dolores 
+                        eos qui ratione voluptatem sequi nesciunt.
+                    </h5>
+    
+                    <h5>
+                        Neque porro quisquam est, 
+                        qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
+                        sed quia non numquam eius modi tempora incidunt ut labore et dolore 
+                        magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum 
+                        exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea 
+                        commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate 
+                        velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat 
+                        quo voluptas nulla pariatur? 
+                    </h5>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio player -->
+        <div id="foot" class="footer bg-dark">
+            <audio controls="controls"  src="xmas/1.mp3" type="audio/mp3" style="width:101%; border-radius:0px">
+            </audio>
+        </div>
+    </div>
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        -This is where I will place all the code for the modals, or 'popups' for any information you see 
+        fit. I am currently thinking that all the information that you want to include for the albums and
+        songs should be displayed in modal form.
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    
+    
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                The First Noel
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <div class="modal fade" id="noel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">The First Noel</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-left">
+                    <!-- <div class="container"> -->
+                    <div class="tab">
+                        <button class="tablinks" onclick="openTab(event, 'noel_lyrics')">Confabulation</button>
+                        <button class="tablinks" onclick="openTab(event, 'noel_about')">Inspiration</button>
+                    </div>
+                            
+                    <div id="noel_lyrics" class="tabcontent">
+                        <small>
+                            Duh dum duh dum dee dee dum dum dee dummm 
+                            <br>
+                            was to certain poor shephards duh dee duh dum dum dee
+                            <br>
+                            In fields where they hey lay keeping their sheep
+                            <br>
+                            on a dum dum duh dum dum duh dee dee dee dee dee
+                            <br>
+                            Noel noel noel noel born is the king of dee dee dee dum dee
+                            <br>
+                            <br>
+                            Then by the light of that same star 
+                            <br>
+                            Three wise men came from country far
+                            <br>
+                            To seek for the king was their intent 
+                            <br>
+                            And to follow that thing wherever it went
+                            <br>
+                            Noel noel noel noel born is the king of Israel
+                            <br>
+                            <br>
+                            Then entered in those wise men three 
+                            <br>
+                            Full reverently upon their knee
+                            <br>
+                            And offered there in his presence
+                            <br>
+                            Their gold and myrrh and frankincense
+                            <br>
+                            Noel noel noel noel born is the king of Israel connected, you and I. We're 
+                            <br>
+                            on the same curve, just on opposite ends.
+                        </small>
+                    </div>
+                            
+                    <div id="noel_about" class="tabcontent">
+                        <small>
+                            Percy loves the boss bass line in the chorale setting of The First Noel 
+                            and finds himself wandering around during the holidays humming it. It's 
+                            melodic and light hearted, something not always associated with bass lines 
+                            and a lot of people probably hear this version without even thinking that 
+                            they are not hearing the melody because the bass part is so melodic. At 
+                            least that's what Percy hopes for.
+                        </small>
+
+                    </div>
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+                                       
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                            O Little Town Of Bethlehem
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <div class="modal fade" id="bethlehem" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">O Little Town Of Bethlehem</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-left">
+                    <!-- <div class="container"> -->
+                    <div class="tab">
+                        <button class="tablinks" onclick="openTab(event, 'bethlehem_lyrics')">Lyrics</button>
+                        <button class="tablinks" onclick="openTab(event, 'bethlehem_about')">About</button>
+                    </div>
+                            
+                    <div id="bethlehem_lyrics" class="tabcontent">
+                        <small>
+                            O little town of Bethlehem I cannot tell a lie
+                            <br>
+                            At night I sleep and dream of sheep as silent stars go by
+                            <br>
+                            And in my bedroom shining the Christmas star nightlight
+                            <br>
+                            My mom gave me when I was three to shut me up at night 
+                            <br>
+                            <br>
+                            Oh holy child of Bethlehem drop in on us we pray
+                            <br>
+                            Cast out our sin and ante in our five card game today
+                            <br>
+                            We're singing Christmas carols and toasting to your birth
+                            <br>
+                            Oh come to us, abide with us and peace to all on earth
+                        </small>
+                    </div>
+                            
+                    <div id="bethlehem_about" class="tabcontent">
+                        <small>
+                            Percy always wondered why his parents were so eager to put him 
+                            to bed during the holidays because Santa Claus was only going 
+                            to come on one night, Christmas Eve. Percy could fake sleep 
+                            like a sloth and has distinct memories of his parents coming 
+                            into his room to check up on him while he was wide awake, faking 
+                            it. Strangely enough, many years later this is a sweet memory of 
+                            Percy's, knowing that his parents loved him and watched over him, 
+                            even as he was performing the most boring and simple role.  
+                        </small>
+
+                    </div>
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                Frosty The Dragon
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <div class="modal fade" id="frosty" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Frosty The Dragon</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-left">
+                    <!-- <div class="container">  frosty -->
+                    <div class="tab">
+                        <button class="tablinks" onclick="openTab(event, 'frosty_lyrics')">Confabulation</button>
+                        <button class="tablinks" onclick="openTab(event, 'frosty_about')">Inspiration</button>
+                    </div>
+                            
+                    <div id="frosty_lyrics" class="tabcontent">
+
+                        <small>
+                            Frosty the dragon lived by the sea
+                            <br>
+                            And frolicked in the winter sun in a land called Honahlee
+                            <br>
+                            Frosty the dragon was a jolly happy soul
+                            <br>
+                            He was made of strings and skiing wax and two eyes that glowed like coals
+                            <br>
+                            <br>
+                            There must have been some magic in that old silk hat they found
+                            <br>
+                            'cuz when they placed it on his head, he began to spin around
+                            <br><br>
+                            Frosty the dragon was alive as he could be
+                            <br>
+                            And the children say he could laugh and play, just the same as you and me
+                            <br>
+                            <br>
+                            (awesome trumpet solo by Doug)
+                            <br>
+                            <br>
+                            We stuck a hot potato in that old silk hat they found
+                            <br>
+                            And when they placed it on his head he began to melt on down
+                            <br>
+                            Dragons live forever, but not those made of snow
+                            <br>
+                            Man, icy wings and jello rings yeah you know they gotta go
+                            <br>
+                            Yeah, you know they got to go
+                            <br>
+                            <br>
+                            Thumpety thump thump thumpety thump thump
+                            <br>
+                            Look at Frosty go
+                            <br>
+                            Thumpety thump thump thumpety thump thump
+                            <br>
+                            Runnin' off in the snow
+                        </small>
+                    </div>
+                            
+                    <div id="frosty_about" class="tabcontent">
+
+                        <small>
+                            The song Puff the Magic Dragon troubled Percy deeply. What 
+                            sort of boy would betray his best friend, and a dragon no 
+                            less. Percy knew that poor Puff had no way to understand 
+                            his rejection and Percy worried about the fatility of losing 
+                            one's best friend. He remembers crying over it once or twice 
+                            alone at night. Frosty the Snowman had a similar story, but 
+                            Percy had first hand experience with snow people and knew they 
+                            were just stacks of big snowballs made with wet sticky snow 
+                            that had no love for anything. Frosty the Dragon is Percy's 
+                            way of helping other children deal with Puff-like stories by 
+                            substituting a totally worthless snow person for a beautiful 
+                            and proud magical creature. 
+
+                            <br><hr><br>
+
+                            Childhood is confusing enough without songs about mythical features 
+                            disappearing under emotional duress. When Percy was a young boy the song 
+                            Puff the Magic Dragon troubled him deeply because he couldn't understand 
+                            why any kid would be stupid enough to reject a freaking dragon, especially 
+                            one that was such a great friend. It was inconceivable that a kid could be 
+                            so foolishly disloyal to a Dragon. It probably had no way to understand why 
+                            it was being rejected by it's best friend and Percy worried that Jackie Paper 
+                            actually killed Puff. It was way too much for Percy to bear and he cried over 
+                            it once or twice alone at night, but that was enough.
+                            <br><br>
+                            Frosty the Snowman was a similar sort of thing, but Percy had real first hand 
+                            experience with snow people and knew they were just stacked big snowballs that 
+                            could only be made when the snow was sticky wet. Making a snowman was usually a 
+                            lot of fun unless adults wanted to enforce whatever rules and got mad when you 
+                            threw a snowball, perfectly, into the bridge of their nose. Snowmen were pawn-like 
+                            soldiers in the wars between siblings and neighborhood packs and never lasted very 
+                            long. Percy instinctively understood that the whole song and story of Frosty was a 
+                            fabrication by adults that didn't know what a snowman's purpose actually was.
+                            <br><br> 
+                            In Frosty the Dragon, Percy was probably trying to exorcise his feelings for Puff 
+                            by substituting the totally worthless Frosty for him. It does not bother Percy in 
+                            the least that he has known several real snowmen and participated in their cruel 
+                            demise while he has never seen a reptile larger than a crocodile, which was enough. 
+                        </small>
+                    </div>
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                O Tannenbaum
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+
+    <div class="modal fade" id="tannenbaum" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">O Tannenbaum</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-left">
+                    <!-- <div class="container">  tannenbaum -->
+                    <div class="tab">
+                        <button class="tablinks" onclick="openTab(event, 'tannenbaum_lyrics')">Lyrics</button>
+                        <button class="tablinks" onclick="openTab(event, 'tannenbaum_about')">About</button>
+                    </div>
+                            
+                    <div id="tannenbaum_lyrics" class="tabcontent">
+                        <small>
+                            O Tannenbaum, o Tannenbaum
+                            <br>
+                            Wie treu sind deine Blätter
+                            <br>
+                            O Tannenbaum, o Tannenbaum
+                            <br>
+                            Wie treu sind deine Blätter
+                            <br>
+                            Du grünst nicht nur zur Sommerzeit
+                            <br>
+                            Nein auch im Winter, wenn es schneit
+                            <br>
+                            O Tannenbaum, o Tannenbaum
+                            <br>
+                            Ich habe ein tiny Blätter
+                            <br>
+                            <br>
+                            Oh Christmas tree, Oh Christmas tree
+                            <br>
+                            How lovely are your branches
+                            <br>
+                            Oh Christmas tree, a plastic tree
+                            <br>
+                            Adorned with chintzy flanges 
+                            <br>
+                            I am so glad at Christmas eve
+                            <br>
+                            For what my true love gives to me
+                            <br>
+                            Oh Christmas tree, Oh Christmas tree
+                            <br>
+                            How lucky are your branches
+                            <br>
+                            <br>
+                            O Tannenbaum, Yo Tannenbaum
+                            <br>
+                            Mein Onkel ist Franz Gruber
+                            <br>
+                            O Tannenbaum, Joe Tannenbaum
+                            <br>
+                            Der potato's ein tuber
+                            <br>
+                            Die Kuh sagt muh in Sommerziet
+                            <br>
+                            Die Kuh sagt muh in Winterzeit
+                            <br>
+                            O Tannenbaum, O Tannenbaum
+                            <br>
+                            Mein dachsund schniffen gluestuck
+                        </small>
+                            
+                    </div>
+                            
+                    <div id="tannenbaum_about" class="tabcontent">
+                        <small>
+                            Percy's first childhood pet was Dashnika Von Fritzel, a 
+                            shorthair dachshund and renowned omnivore. There was something 
+                            about having a pet of German origin that led Percy to study 
+                            German, that and the fact that his middle school dropped Latin. 
+                            Percy loves saying certain German words, like Tannenbaum and 
+                            singing German carols, like Franz Gruber's lovely and immortal 
+                            Silent Night 
+                        </small>
+
+                    </div>
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                O Come O Come Emmanuel
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <div class="modal fade" id="emmanuel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">O Come O Come Emmanuel</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-left">
+                    <!-- <div class="container">  emmanuel -->
+                    <div class="tab">
+                        <button class="tablinks" onclick="openTab(event, 'emmanuel_lyrics')">Lyrics</button>
+                        <button class="tablinks" onclick="openTab(event, 'emmanuel_about')">About</button>
+                    </div>
+                            
+                    <div id="emmanuel_lyrics" class="tabcontent">
+                        <small>
+                            emmanuel bones don't break, mine do. That's clear. emmanuel cells react to 
+                            bacteria and viruses differently than mine. You don't get sick, I do. 
+                            That's also clear. But for some reason, you and I react the exact same 
+                            way to water. We swallow it too fast, we choke. We get some in our lungs, 
+                            we drown. However unreal it may seem, we are connected, you and I. We're 
+                            on the same curve, just on opposite ends.
+                            <br><br>
+                            emmanuel bones don't break, mine do. That's clear. emmanuel cells react to 
+                            bacteria and viruses differently than mine. You don't get sick, I do. 
+                            That's also clear. But for some reason, you and I react the exact same 
+                            way to water. We swallow it too fast, we choke. We get some in our lungs, 
+                            we drown. However unreal it may seem, we are connected, you and I. We're 
+                            on the same curve, just on opposite ends.
+                        </small>
+                    </div>
+                            
+                    <div id="emmanuel_about" class="tabcontent">
+                        <small>
+                            Normally, both emmanuel asses would be dead as fucking fried chicken, but you 
+                            happen to pull this shit while I'm in a transitional period so I don't 
+                            wanna kill you, I wanna help you. But I can't give you this case, it don't 
+                            belong to me. Besides, I've already been through too much shit this morning 
+                            over this case to hand it over to emmanuel dumb ass.
+                            <br><br>
+                            Normally, both emmanuel asses would be dead as fucking fried chicken, but you 
+                            happen to pull this shit while I'm in a transitional period so I don't 
+                            wanna kill you, I wanna help you. But I can't give you this case, it don't 
+                            belong to me. Besides, I've already been through too much shit this morning 
+                            over this case to hand it over to emmanuel dumb ass.
+                        </small>
+
+                    </div>
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                God Rest Ye Merry Gentlemen
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <div class="modal fade" id="gentlemen" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">God Rest Ye Merry Gentlemen</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-left">
+                    <!-- <div class="container">  gentlemen -->
+                    <div class="tab">
+                        <button class="tablinks" onclick="openTab(event, 'gentlemen_lyrics')">Lyrics</button>
+                        <button class="tablinks" onclick="openTab(event, 'gentlemen_about')">About</button>
+                    </div>
+                            
+                    <div id="gentlemen_lyrics" class="tabcontent">
+                            <small>
+                                God rest ye merry gentlemen and welcome to LA
+                                <br>
+                                A member of the Hell's Angels is making your latte
+                                <br>
+                                It tastes like dung and burns your tongue but thank him anyway
+                                <br>
+                                <br>
+                                Oh tidings of comfort and joy, comfort and joy
+                                <br>
+                                Oh tidings of comfort and joy
+                                <br>
+
+                                <br>
+                                (organ solo)
+                                <br>
+                                <br>
+                                A heavenly host of angels sell their snake oil to mankind
+                                <br>
+                                And shepherds watching o'er their flock at Hollywood and Vine
+                                <br>
+                                The wise men at LaBrea tar pits are searching for their minds 
+                                <br>
+                                <br>
+                                Oh tidings of comfort and joy, comfort and joy
+                                <br>
+                                Oh tidings of comfort and joy
+                                <br>
+                                <br>
+                                zeeba zabba za za za za zobo zeeba zaba 
+                                <br>
+                                zee bee ba jza zee za za zee za zeba  
+                                <br>
+                                za za zee zi .......(and so on scat Zinging)
+                            </small>
+                    </div>
+                            
+                    <div id="gentlemen_about" class="tabcontent">
+                        <small>
+                            One of Percy's earliest memories is being scared witless by a 
+                            fiberglass-headed Mickey Mouse at Disneyland. Later, the violent 
+                            Watts riots frightened him as he watched it described on network 
+                            news reports on grainy black and white TV. He became transfixed 
+                            by the La Brea Tar Pits where saber tooth cats, sloths, wolves 
+                            and mammoths were killed and swallowed whole by black ooze seeping 
+                            up from underground. He naturally believes that noir is a dark and 
+                            foreboding supernatural force that oozes from a black hole in a 
+                            dark corner of the universe and emerges from a portal along the 
+                            Pacific Ocean, known to us as the City of Angels. 
+                        </small>
+
+                    </div>
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, TAB) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(TAB).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>

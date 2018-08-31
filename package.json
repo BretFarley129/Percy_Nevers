@@ -1,0 +1,17 @@
+{
+  "name": "percy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mediaelement": "^4.2.9"
+  },
+  "devDependencies": {},
+  "description": ""
+}
